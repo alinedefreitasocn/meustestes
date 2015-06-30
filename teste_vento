@@ -72,13 +72,23 @@ q = stick_plot(dt, u, v)
 ref = 1
 qk = plt.quiverkey(q, 0.1, 0.85, ref,
                   "%s m s$^{-1}$" % ref,
-                  labelpos='N', coordinates='axes')
+                  labelpos='N', coordinates='axes') #posicao, tamanho 
+                                                    #escala da figura
 
-_ = plt.xticks(rotation=70)
+_ = plt.xticks(rotation=70)  #data com angulo de 70°
 
-fig, ax = plt.subplots(figsize=(11, 2.75))
+##################################################################
+## original
+##
+#fig, ax = plt.subplots(figsize=(11, 2.75))
+#q = stick_plot(dt, u, v, ax=ax, width=0.002, color='green')
+###################################################################
 
-q = stick_plot(dt, u, v, ax=ax, width=0.002, color='green')
+"""testando subplot com 3 figuras stickplot"""
+fig, (ax1, ax2, ax3) = plt.subplots(nrows=3, sharex=True)  
+
+ax1 = stick_plot(dt, u, v, ax=ax, width=0.002, color='green')   
+""""""
 
 ref = 1
 qk = ax.quiverkey(q, 0.1, 0.85, ref,
@@ -92,4 +102,3 @@ qk = ax.quiverkey(q, 0.1, 0.85, ref,
                   "%s N m$^{-2}$" % ref,
                   labelpos='N', coordinates='axes')
 _ = plt.xticks(rotation=70)
-
