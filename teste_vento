@@ -2,98 +2,16 @@
 Lendo arquivo de vento de guaratiba e gerando figura tipo stickplot ao longo do tempo
 """
 
+# -*- coding: utf-8 -*-
+"""
+Created on Tue Jun 30 10:07:17 2015
+
+@author: b9ke
+"""
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.dates import date2num
 from datetime import datetime, timedelta
-
-##################################################################
-####               essa é a minha parte
-##################################################################
-
-
-# -*- coding: utf-8 -*-
-"""
-Created on Fri Jun 19 09:59:45 2015
-
-@author: b9ke
-"""
-
-import pandas as pd
-import matplotlib
-import matplotlib.pyplot as plt
-import numpy as np
-
-#xls = load('guaratiba.txt');
-#data = xls.parse
-
-vento = loadtxt('guaratiba.txt')
-lat = vento[:,1]
-lon = vento[:,2]
-dia = vento[:,4]
-mes = vento[:,5]
-ano = vento[:,6]
-hr = vento[:,7]
-minuto = vento[:,8]
-veloc = vento[:,9]
-direc = vento[:,10]
-
-#usando  
-datahora = np.zeros(len(dia))
-ano_int = np.zeros(len(dia))
-mes_int = np.zeros(len(dia))
-dia_int = np.zeros(len(dia))
-hr_int = np.zeros(len(dia))
-min_int = np.zeros(len(dia))
-    
-    
-for i in xrange(len(dia)):
-    ano_int = int(ano[i])
-    mes_int = int(mes[i])
-    dia_int = int(dia[i])
-    hr_int = int(hr[i])
-    min_int = int(minuto[i])
-    datahora[i] = datetime.datetime(ano_int[i], mes_int[i], dia_int[i], hr_int[i], min_int[i])
-    datahora.strftime("%d-%m-%Y %H:%M)
-    
-#arq_vento = open('guaratiba.txt', 'r');
-#cabecalho = arq_vento.readline();
-#vento = arq_vento.readlines();
-#arq_vento.close()
-#
-#linhas = len(vento_guaratiba)
-#ID = np.zeros(len(vento), 'f')
-#lat = np.zeros(len(vento), 'f')
-#lon = np.zeros(len(vento), 'f')
-#cota = np.zeros(len(vento), 'f')
-#data = np.zeros(len(vento), 's')
-#hora = np.zeros(len(vento), 's')
-#veloc = np.zeros(len(vento), 'f')
-#direc = np.zeros(len(vento), 'f')
-#
-#
-#for i in linhas:
-#    split_istr = vento[i].split('\t')
-#ID[i] = float(split_istr[0]
-#lat[i] = float(split_istr[1]
-#lon[i] = float(split_istr[2]
-#cota[i] = float(split_istr[3]
-#data[i] = str(split_istr[4]
-#hora[i] = str(split_istr[5]
-#veloc[i] = float(split_istr[6]
-#direc[i] = float(split_istr[7]
-#    
-
-
-
-##################################################################
-####               essa foi copiada do site
-####   https://ocefpaf.github.io/python4oceanographers/blog/2014/09/15/stick_plot/
-###################################################################
-x = np.arange(100, 110, 0.1)
-start = datetime.now()
-time = [start + timedelta(days=n) for n in range(len(x))]
-u, v = np.sin(x), np.cos(x)
 
 
 def stick_plot(time, u, v, **kw):
@@ -121,3 +39,68 @@ def stick_plot(time, u, v, **kw):
     ax.axes.get_yaxis().set_visible(False)
     ax.xaxis_date()
     return q
+ 
+
+
+def cart2pol(x, y):
+    rho = np.sqrt(x**2 + y**2)
+    phi = np.arctan2(y, x)
+    return(rho, phi)
+
+def pol2cart(rho, phi):
+    x = rho * np.cos(phi)
+    y = rho * np.sin(phi)
+    return(x, y)
+
+"""
+lendo arquivo e definindo variáveis"""
+
+vento = loadtxt('guaratiba.txt')
+lat = vento[:,0]
+lon = vento[:,1]
+datahora = vento[:,3]
+veloc = vento[:,4]
+direc = vento[:,5]
+u, v = pol2cart(veloc,direc)
+
+
+"""
+definir u, v e tempo aqui
+"""
+
+
+#x = np.arange(100, 110, 0.1)
+#start = datetime.now()
+time = datahora.date2num()  #[start + timedelta(days=n) for n in range(len(x))]
+#u, v = np.sin(x), np.cos(x)
+
+q = stick_plot(time, u, v)
+
+ref = 1
+qk = plt.quiverkey(q, 0.1, 0.85, ref,
+                  "%s N m$^{-2}$" % ref,
+                  labelpos='N', coordinates='axes')
+
+_ = plt.xticks(rotation=70)  
+
+
+
+fig, ax = plt.subplots(figsize=(11, 2.75))
+
+q = stick_plot(time, u, v, ax=ax, width=0.002, color='green')
+
+ref = 1
+qk = ax.quiverkey(q, 0.1, 0.85, ref,
+                  "%s N m$^{-2}$" % ref,
+                  labelpos='N', coordinates='axes')
+                  
+q = stick_plot(time, u, v, angles='xy')
+
+ref = 1
+qk = ax.quiverkey(q, 0.1, 0.85, ref,
+                  "%s N m$^{-2}$" % ref,
+                  labelpos='N', coordinates='axes')
+_ = plt.xticks(rotation=70)                  
+                  
+                  
+                  
