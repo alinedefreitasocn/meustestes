@@ -12,14 +12,78 @@ from datetime import datetime, timedelta
 ##################################################################
 
 
-load 'guaratiba.txt'
-lat = guaratiba(:,2);
-lon = guaratiba(:,3);
-cota = guaratiba(:,4);
-data = guaratiba(:,5:9); data = datenum(data);
-veloc = guaratiba(:,10);
-direc = guaratiba(:,11);
-datahora = datestr(data);
+# -*- coding: utf-8 -*-
+"""
+Created on Fri Jun 19 09:59:45 2015
+
+@author: b9ke
+"""
+
+import pandas as pd
+import matplotlib
+import matplotlib.pyplot as plt
+import numpy as np
+
+#xls = load('guaratiba.txt');
+#data = xls.parse
+
+vento = loadtxt('guaratiba.txt')
+lat = vento[:,1]
+lon = vento[:,2]
+dia = vento[:,4]
+mes = vento[:,5]
+ano = vento[:,6]
+hr = vento[:,7]
+minuto = vento[:,8]
+veloc = vento[:,9]
+direc = vento[:,10]
+
+#usando  
+datahora = np.zeros(len(dia))
+ano_int = np.zeros(len(dia))
+mes_int = np.zeros(len(dia))
+dia_int = np.zeros(len(dia))
+hr_int = np.zeros(len(dia))
+min_int = np.zeros(len(dia))
+    
+    
+for i in xrange(len(dia)):
+    ano_int = int(ano[i])
+    mes_int = int(mes[i])
+    dia_int = int(dia[i])
+    hr_int = int(hr[i])
+    min_int = int(minuto[i])
+    datahora[i] = datetime.datetime(ano_int[i], mes_int[i], dia_int[i], hr_int[i], min_int[i])
+    datahora.strftime("%d-%m-%Y %H:%M)
+    
+#arq_vento = open('guaratiba.txt', 'r');
+#cabecalho = arq_vento.readline();
+#vento = arq_vento.readlines();
+#arq_vento.close()
+#
+#linhas = len(vento_guaratiba)
+#ID = np.zeros(len(vento), 'f')
+#lat = np.zeros(len(vento), 'f')
+#lon = np.zeros(len(vento), 'f')
+#cota = np.zeros(len(vento), 'f')
+#data = np.zeros(len(vento), 's')
+#hora = np.zeros(len(vento), 's')
+#veloc = np.zeros(len(vento), 'f')
+#direc = np.zeros(len(vento), 'f')
+#
+#
+#for i in linhas:
+#    split_istr = vento[i].split('\t')
+#ID[i] = float(split_istr[0]
+#lat[i] = float(split_istr[1]
+#lon[i] = float(split_istr[2]
+#cota[i] = float(split_istr[3]
+#data[i] = str(split_istr[4]
+#hora[i] = str(split_istr[5]
+#veloc[i] = float(split_istr[6]
+#direc[i] = float(split_istr[7]
+#    
+
 
 
 ##################################################################
