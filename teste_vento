@@ -1,35 +1,14 @@
+# -*- coding: utf-8 -*-
 """
-Lendo arquivo de vento de guaratiba e gerando figura tipo stickplot ao longo do tempo
+Created on Tue Jun 30 14:13:48 2015
+
+@author: b9ke
 """
 
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.dates import date2num
 from datetime import datetime, timedelta
-
-##################################################################
-####               essa é a minha parte
-##################################################################
-
-
-load 'guaratiba.txt'
-lat = guaratiba(:,2);
-lon = guaratiba(:,3);
-cota = guaratiba(:,4);
-data = guaratiba(:,5:9); data = datenum(data);
-veloc = guaratiba(:,10);
-direc = guaratiba(:,11);
-datahora = datestr(data);
-
-
-##################################################################
-####               essa foi copiada do site
-####   https://ocefpaf.github.io/python4oceanographers/blog/2014/09/15/stick_plot/
-###################################################################
-x = np.arange(100, 110, 0.1)
-start = datetime.now()
-time = [start + timedelta(days=n) for n in range(len(x))]
-u, v = np.sin(x), np.cos(x)
 
 
 def stick_plot(time, u, v, **kw):
@@ -44,7 +23,6 @@ def stick_plot(time, u, v, **kw):
         raise AssertionError("Stickplot angles must be 'uv' so that"
                              "if *U*==*V* the angle of the arrow on"
                              "the plot is 45 degrees CCW from the *x*-axis.")
-
     time, u, v = map(np.asanyarray, (time, u, v))
     if not ax:
         fig, ax = plt.subplots()
@@ -53,7 +31,65 @@ def stick_plot(time, u, v, **kw):
                   angles='uv', width=width, headwidth=headwidth,
                   headlength=headlength, headaxislength=headaxislength,
                   **kw)
-
     ax.axes.get_yaxis().set_visible(False)
     ax.xaxis_date()
     return q
+
+def cart2pol(x, y):
+    rho = np.sqrt(x**2 + y**2)
+    phi = np.arctan2(y, x)
+    return(rho, phi)
+
+def pol2cart(rho, phi):
+    x = rho * np.cos(phi)
+    y = rho * np.sin(phi)
+    return(x, y)
+
+
+d = loadtxt('guaratiba.txt', dtype={'names': ('data','hora','wspd','wdir'), \
+     'formats': ('S10','S5','f4','f4')},usecols=(3,4,6,7))
+
+dt = []
+wspd = []
+wdir = []
+for s in d:
+    dt.append(datetime.strptime(s[0]+s[1],'%d/%m/%Y%H:%M'))
+    wspd.append(s[2])
+    wdir.append(s[3])
+
+#wspd = np.array(wspd)*0.01
+    
+
+#x = np.arange(100, 110, 0.1)
+#start = datetime.now()
+#time = [start + timedelta(days=n) for n in range(len(x))]
+#u, v = np.sin(x), np.cos(x)
+
+u,v = pol2cart(wspd, wdir)
+
+q = stick_plot(dt, u, v)
+
+ref = 1
+qk = plt.quiverkey(q, 0.1, 0.85, ref,
+                  "%s m s$^{-1}$" % ref,
+                  labelpos='N', coordinates='axes')
+
+_ = plt.xticks(rotation=70)
+
+fig, ax = plt.subplots(figsize=(11, 2.75))
+
+q = stick_plot(dt, u, v, ax=ax, width=0.002, color='green')
+
+ref = 1
+qk = ax.quiverkey(q, 0.1, 0.85, ref,
+                  "%s m s$^{-1}$" % ref,
+                  labelpos='N', coordinates='axes')
+
+q = stick_plot(dt, u, v, angles='xy')
+
+ref = 1
+qk = ax.quiverkey(q, 0.1, 0.85, ref,
+                  "%s N m$^{-2}$" % ref,
+                  labelpos='N', coordinates='axes')
+_ = plt.xticks(rotation=70)
+
