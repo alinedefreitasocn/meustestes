@@ -1,0 +1,75 @@
+ ccc;
+ 
+load 'guaratiba2.txt'
+lat = guaratiba2(:,1);
+lon = guaratiba2(:,2);
+dia = guaratiba2(:,4);
+mes = guaratiba2(:,5);
+ano = guaratiba2(:,6);
+hora = guaratiba2(:,7);
+minuto = zeros(size(hora));
+seg = zeros(size(hora));
+veloc = guaratiba2(:,9);
+direc = guaratiba2(:,10);
+
+datahora = datenum([ano, mes, dia, hora, minuto, seg]);
+
+%plotando dados para sul em cor diferente
+[sul, lixo] = find(direc>135 & direc<225);
+[outros, lixo] = find(direc<135 | direc>225);
+
+figure;
+plot(datahora(sul), direc(sul), '.r'); hold on
+plot(datahora(outros), direc(outros), '.b');
+diassul = datestr(datahora(sul));
+velocsul = veloc(sul); velocsul = num2str(velocsul);
+sul = [diassul velocsul];
+
+%serie de subplots a cada 3 dias com a direção do vento em cada dia
+inidata = fix(datahora(1));
+fimdata = ceil(datahora(end))-3;
+vt = inidata:3:fimdata; 
+
+for i=vt
+    NameArray = {'LineStyle'};
+    ValueArray = {'.'}';
+    figure;
+    
+    [diad, lixo] = find(datahora>=i & datahora<i+1 );
+    subplot(3,1,1);
+    [ax, p1, p2] = plotyy(datahora(diad),direc(diad),datahora(diad),veloc(diad)); 
+    dateaxis('x',15); diatitulo = datestr(datahora(diad(1)));
+    title(diatitulo); 
+    ylabel(ax(1),'Direcao') % label left y-axis
+    ylabel(ax(2),'Intensidade') % label right y-axis
+    %p1.LineStyle = '.';
+    set(p1,NameArray,ValueArray);
+    
+    %datainicial = datainicial+1;
+    [diad, lixo] = find(datahora>=i+1 & datahora<i+2 );
+    subplot(3,1,2);
+    [ax, p1, p2] = plotyy(datahora(diad),direc(diad),datahora(diad),veloc(diad)); 
+    dateaxis('x',15); diatitulo = datestr(datahora(diad(1)));
+    title(diatitulo); 
+    ylabel(ax(1),'Direcao') % label left y-axis
+    ylabel(ax(2),'Intensidade') % label right y-axis
+    set(p1,NameArray,ValueArray);
+    
+    %datainicial = datainicial+1;
+    [diad, lixo] = find(datahora>=i+2 & datahora<i+3 );
+    subplot(3,1,3);
+    [ax, p1, p2] = plotyy(datahora(diad),direc(diad),datahora(diad),veloc(diad)); 
+    dateaxis('x',15); diatitulo = datestr(datahora(diad(1)));
+    title(diatitulo); 
+    ylabel(ax(1),'Direcao') % label left y-axis
+    ylabel(ax(2),'Intensidade') % label right y-axis
+    set(p1,NameArray,ValueArray);
+    xlabel(ax(2),'Data Hora') % label x-axis
+    
+    %datainicial = datainicial+1;
+end
+%[linha, coluna] = find(hora==0 | hora==12 | hora == 6 | hora == 18); %plotando somente dado de 6 em 6 hr
+
+% sp = figure;
+% H = sticks(datahora(linha), veloc(linha), direc(linha));
+% dateaxis('x',0,datahora(1));
