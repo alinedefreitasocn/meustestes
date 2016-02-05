@@ -1,0 +1,48 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Thu Feb 04 14:25:41 2016
+Transformada de Fourrier para analise de frequencia dos dados do NCEP e BNDO
+autor: Aline
+"""
+
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+
+df = pd.read_excel("C:\Users\\b9ke\Downloads\\ncep_bndo.xls", sheetname = "entre anos", header=0)
+
+
+#Extraindo a serie bruta
+ncepBruta = df.ncep
+bndoBruta = df.bndo
+
+#dT eh a intervado amostral e N eh o numedo de registros
+dt = 1.
+N = len(bndoBruta)
+t = np.arange(0.,len(bndoBruta),1.)
+
+
+#FFT da serie bruta
+ncepfftBruta = np.fft.fft(ncepBruta)
+bndofftBruta = np.fft.fft(bndoBruta)
+
+#destendenciando a serie (retirando a tendencia/media)
+ncepTend = df.ncep-np.mean(df.ncep)
+bndoTend = df.bndo-np.mean(df.bndo)
+
+#Transformada de Fourier FFT da serie destendenciada
+ncepfft = np.fft.fft(ncepTend)
+bndofft = np.fft.fft(bndoTend)
+
+#vetor frequencia de 0 ate 1/intervalo amostral
+f = np.arange(0,1./dt,1./(N*dt))
+
+#criando uma matrix resultante da multiplicacao matricial de f por t
+xxx = np.outer(t, f)
+
+
+plt.plot(f, abs(ncepfft))
+plt.plot(f, abs(bndofft))
+plt.grid()
+#plt.plot(abs(ncepfft2))
+#plt.plot(abs(bndofft2))
